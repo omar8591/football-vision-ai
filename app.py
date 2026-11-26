@@ -412,15 +412,21 @@ def display_video_pair(
 # 7. CONVERT DEMO VIDEO TO BROWSER MP4
 # ==========================================
 
-def convert_demo_video(video_path):
+@st.cache_data(
+    show_spinner="Preparing the video showcase...",
+    max_entries=2
+)
+def convert_demo_video(video_path, modified_at):
 
     """
     Converts a demonstration video into browser-friendly
     H.264 MP4 format.
 
-    Uses temporary files only.
-    Does not create a persistent video cache.
+    Streamlit caches the converted bytes using the source
+    path and modification time as the cache key.
     """
+
+    video_path = Path(video_path)
 
     if not video_path.exists():
         return None
@@ -483,40 +489,51 @@ st.markdown(
 
 st.caption(
     "Watch how Football Vision AI detects players "
-    "and footballs in real match footage."
+    "and footballs in real match footage. Load the clips when you are ready "
+    "to watch them."
 )
 
-if DEMO_BEFORE.exists() and DEMO_AFTER.exists():
+show_showcase = st.toggle(
+    "Load video showcase",
+    value=False,
+    key="load_video_showcase"
+)
 
-    try:
+if show_showcase:
 
-        before_bytes = convert_demo_video(
-            DEMO_BEFORE
-        )
-        after_bytes = convert_demo_video(
-            DEMO_AFTER
-        )
+    if DEMO_BEFORE.exists() and DEMO_AFTER.exists():
 
-        display_video_pair(
-            before_bytes,
-            after_bytes,
-            "🎬 BEFORE — Original Video",
-            "🤖 AFTER — AI Detection"
-        )
+        try:
 
-    except Exception as error:
+            before_bytes = convert_demo_video(
+                str(DEMO_BEFORE),
+                DEMO_BEFORE.stat().st_mtime_ns
+            )
+            after_bytes = convert_demo_video(
+                str(DEMO_AFTER),
+                DEMO_AFTER.stat().st_mtime_ns
+            )
 
-        st.error(
-            f"Could not load comparison videos: {error}"
-        )
+            display_video_pair(
+                before_bytes,
+                after_bytes,
+                "🎬 BEFORE — Original Video",
+                "🤖 AFTER — AI Detection"
+            )
 
-else:
+        except Exception as error:
 
-    if not DEMO_BEFORE.exists():
-        st.warning(f"Missing file: {DEMO_BEFORE}")
+            st.error(
+                f"Could not load comparison videos: {error}"
+            )
 
-    if not DEMO_AFTER.exists():
-        st.warning(f"Missing file: {DEMO_AFTER}")
+    else:
+
+        if not DEMO_BEFORE.exists():
+            st.warning(f"Missing file: {DEMO_BEFORE}")
+
+        if not DEMO_AFTER.exists():
+            st.warning(f"Missing file: {DEMO_AFTER}")
 
 
 st.divider()
@@ -923,10 +940,17 @@ if input_type == "🎥 Video":
 
         st.markdown("### Your Uploaded Video")
 
-        display_video(
-            video_bytes,
-            "🎬 YOUR ORIGINAL VIDEO"
+        show_uploaded_preview = st.toggle(
+            "Preview uploaded video",
+            value=False,
+            key="preview_uploaded_video"
         )
+
+        if show_uploaded_preview:
+            display_video(
+                video_bytes,
+                "🎬 YOUR ORIGINAL VIDEO"
+            )
 
         if st.button(
             "⚡ Detect Players & Football"
