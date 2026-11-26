@@ -21,8 +21,9 @@ videos are read from `examples\before.mp4` and `examples\after.mp4`.
 2. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/) with
    GitHub.
 3. Choose **Create app**, then select the repository, branch, and `app.py`.
-4. Deploy. Streamlit Cloud installs the packages from `requirements.txt` and
-   redeploys when new commits are pushed to the selected branch.
+4. Deploy. Streamlit Cloud installs Python packages from `requirements.txt`
+   and Linux libraries from `packages.txt`, then redeploys when new commits
+   are pushed to the selected branch.
 
 For `omar8591/football-vision-ai`, the GitHub remote is:
 
