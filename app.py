@@ -412,6 +412,62 @@ def display_video_pair(
 # 7. CONVERT DEMO VIDEO TO BROWSER MP4
 # ==========================================
 
+def encode_browser_video(input_path, output_path):
+
+    """Create a compact, aspect-preserving preview for browser playback."""
+
+    ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
+
+    command = [
+        ffmpeg_path,
+        "-y",
+        "-i", str(input_path),
+        "-map", "0:v:0",
+        "-vf",
+        "scale=w='min(480,iw)':h='min(640,ih)':"
+        "force_original_aspect_ratio=decrease,fps=24",
+        "-an",
+        "-c:v", "libx264",
+        "-preset", "fast",
+        "-crf", "30",
+        "-pix_fmt", "yuv420p",
+        "-movflags", "+faststart",
+        str(output_path)
+    ]
+
+    result = subprocess.run(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    if result.returncode != 0:
+
+        raise RuntimeError(
+            result.stderr.decode(
+                errors="replace"
+            )[-2000:]
+        )
+
+
+@st.cache_data(
+    show_spinner="Preparing your video preview...",
+    max_entries=2
+)
+def convert_uploaded_video(video_bytes):
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+
+        temp_dir = Path(temp_dir)
+        input_path = temp_dir / "uploaded_video"
+        output_path = temp_dir / "browser_preview.mp4"
+
+        input_path.write_bytes(video_bytes)
+        encode_browser_video(input_path, output_path)
+
+        return output_path.read_bytes()
+
+
 @st.cache_data(
     show_spinner="Preparing the video showcase...",
     max_entries=2
@@ -431,49 +487,16 @@ def convert_demo_video(video_path, modified_at):
     if not video_path.exists():
         return None
 
-    ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
-
     with tempfile.TemporaryDirectory() as temp_dir:
 
         temp_dir = Path(temp_dir)
 
         output_path = temp_dir / "browser_video.mp4"
 
-        command = [
-            ffmpeg_path,
-            "-y",
-            "-i", str(video_path),
-
-            "-map", "0:v:0",
-            "-map", "0:a?",
-
-            "-c:v", "libx264",
-            "-preset", "ultrafast",
-            "-crf", "23",
-
-            "-pix_fmt", "yuv420p",
-
-            "-c:a", "aac",
-            "-b:a", "128k",
-
-            "-movflags", "+faststart",
-
-            str(output_path)
-        ]
-
-        result = subprocess.run(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+        encode_browser_video(
+            video_path,
+            output_path
         )
-
-        if result.returncode != 0:
-
-            raise RuntimeError(
-                result.stderr.decode(
-                    errors="replace"
-                )[-2000:]
-            )
 
         return output_path.read_bytes()
 
@@ -913,13 +936,27 @@ def process_video(video_bytes, confidence):
 
         progress.empty()
 
+        before_preview_path = temp_dir / "input_preview.mp4"
+        after_preview_path = temp_dir / "detected_preview.mp4"
+
+        encode_browser_video(
+            input_path,
+            before_preview_path
+        )
+        encode_browser_video(
+            output_path,
+            after_preview_path
+        )
+
         status.success(
             "Video detection completed!"
         )
 
-        # Return bytes before temporary files are deleted
-
-        return output_path.read_bytes()
+        return (
+            output_path.read_bytes(),
+            before_preview_path.read_bytes(),
+            after_preview_path.read_bytes()
+        )
 
 
 # ==========================================
@@ -948,7 +985,7 @@ if input_type == "🎥 Video":
 
         if show_uploaded_preview:
             display_video(
-                video_bytes,
+                convert_uploaded_video(video_bytes),
                 "🎬 YOUR ORIGINAL VIDEO"
             )
 
@@ -962,7 +999,11 @@ if input_type == "🎥 Video":
                     "Running YOLO detection..."
                 ):
 
-                    detected_video = process_video(
+                    (
+                        detected_video,
+                        original_preview,
+                        detected_preview
+                    ) = process_video(
                         video_bytes,
                         confidence
                     )
@@ -973,8 +1014,8 @@ if input_type == "🎥 Video":
                 )
 
                 display_video_pair(
-                    video_bytes,
-                    detected_video,
+                    original_preview,
+                    detected_preview,
                     "🎬 BEFORE — Original Video",
                     "🤖 AFTER — AI Detection"
                 )
