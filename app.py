@@ -46,9 +46,13 @@ st.markdown("""
 <style>
 
 .stApp {
-    background: linear-gradient(135deg, #fff8e7 0%, #eafaff 52%, #f6edff 100%);
+    --primary-color: #087f5b;
+    --background-color: #f3f8f6;
+    --secondary-background-color: #ffffff;
+    --text-color: #17332e;
+    background: linear-gradient(135deg, #f3f8f6 0%, #edf5f1 52%, #f7faf8 100%);
     background-attachment: fixed;
-    color: #17233c;
+    color: #17332e;
 }
 
 .block-container {
@@ -62,22 +66,22 @@ header[data-testid="stHeader"] {
 }
 
 .hero {
-    background: linear-gradient(120deg, #ffe45e 0%, #ff9a5a 48%, #ff6fae 100%);
+    background: linear-gradient(120deg, #075e46 0%, #087f5b 58%, #13a079 100%);
     padding: 35px;
     border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.24);
     margin-bottom: 30px;
-    box-shadow: 0 16px 40px rgba(223, 112, 93, 0.2);
+    box-shadow: 0 16px 40px rgba(7, 94, 70, 0.2);
 }
 
 .hero h1 {
-    color: #17233c;
+    color: #ffffff;
     font-size: 38px;
     margin-bottom: 8px;
 }
 
 .hero p {
-    color: #293958;
+    color: #e4f5ee;
     font-size: 17px;
     margin: 0;
 }
@@ -85,46 +89,92 @@ header[data-testid="stHeader"] {
 .section-title {
     font-size: 24px;
     font-weight: 700;
-    color: #17233c;
+    color: #17332e;
     margin-top: 20px;
     margin-bottom: 12px;
 }
 
+div[data-testid="stMarkdownContainer"],
+div[data-testid="stMarkdownContainer"] p,
+div[data-testid="stCaptionContainer"],
+div[data-testid="stCaptionContainer"] p,
+label,
+[data-testid="stWidgetLabel"] p {
+    color: #294640;
+}
+
+div[data-testid="stMarkdownContainer"] h1,
+div[data-testid="stMarkdownContainer"] h2,
+div[data-testid="stMarkdownContainer"] h3,
+div[data-testid="stMarkdownContainer"] h4 {
+    color: #17332e;
+}
+
 div[data-testid="stFileUploader"] {
-    background: rgba(255, 255, 255, 0.82);
-    border: 2px dashed #37b9ae;
+    background: #ffffff;
+    border: 2px dashed #168568;
     border-radius: 18px;
     padding: 15px;
-    color: #17233c;
-    box-shadow: 0 10px 24px rgba(31, 92, 113, 0.08);
+    color: #17332e;
+    box-shadow: 0 10px 24px rgba(20, 72, 57, 0.08);
+}
+
+div[data-testid="stFileUploader"] button {
+    color: #075e46;
+    border-color: #168568;
+    font-weight: 700;
 }
 
 .stButton > button {
-    background: linear-gradient(100deg, #ff8a00, #ff4d8d);
+    background: linear-gradient(100deg, #087f5b, #13a079);
     color: #ffffff;
     border: none;
     border-radius: 14px;
     font-weight: 700;
     padding: 14px 20px;
     width: 100%;
-    box-shadow: 0 8px 18px rgba(255, 100, 94, 0.24);
+    box-shadow: 0 8px 18px rgba(8, 127, 91, 0.22);
     transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .stButton > button:hover {
-    background: linear-gradient(100deg, #ff9e22, #ff69a0);
+    background: linear-gradient(100deg, #066c4d, #0b8d68);
     color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 12px 22px rgba(255, 100, 94, 0.3);
+    box-shadow: 0 12px 22px rgba(8, 127, 91, 0.3);
+}
+
+.stButton > button:focus-visible,
+div[data-testid="stFileUploader"] button:focus-visible {
+    outline: 3px solid #f0b429;
+    outline-offset: 3px;
+}
+
+.st-key-load_video_showcase_button button {
+    min-height: 66px;
+    padding: 18px 26px;
+    border-radius: 18px;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 24px rgba(8, 127, 91, 0.24);
+}
+
+.st-key-load_video_showcase_button button:hover {
+    box-shadow: 0 16px 30px rgba(8, 127, 91, 0.32);
 }
 
 div[data-testid="stDownloadButton"] > button {
-    background: linear-gradient(100deg, #26b7a5, #35a7e8);
+    background: linear-gradient(100deg, #075e46, #087f5b);
     color: #ffffff;
     border: none;
     border-radius: 14px;
     font-weight: 600;
-    box-shadow: 0 8px 18px rgba(38, 183, 165, 0.2);
+    box-shadow: 0 8px 18px rgba(8, 127, 91, 0.2);
+}
+
+input[type="radio"],
+input[type="range"] {
+    accent-color: #087f5b;
 }
 
 footer {
@@ -209,18 +259,18 @@ def display_video(video_bytes, title):
             }}
 
             .video-card {{
-                background: linear-gradient(145deg, #fff8df, #ffe9f0);
-                border: 1px solid #ffd1a8;
+                background: #ffffff;
+                border: 1px solid #d6e5df;
                 border-radius: 20px;
                 padding: 14px;
                 overflow: hidden;
                 max-width: 1100px;
                 margin: 0 auto;
-                box-shadow: 0 14px 32px rgba(58, 89, 128, 0.14);
+                box-shadow: 0 14px 32px rgba(20, 72, 57, 0.12);
             }}
 
             .video-title {{
-                color: #253653;
+                color: #17332e;
                 font-size: 16px;
                 font-weight: 700;
                 margin-bottom: 12px;
@@ -316,16 +366,16 @@ def display_video_pair(
 
             .video-card {{
                 min-width: 0;
-                background: linear-gradient(145deg, #fff8df, #ffe9f0);
-                border: 1px solid #ffd1a8;
+                background: #ffffff;
+                border: 1px solid #d6e5df;
                 border-radius: 20px;
                 padding: 14px;
                 overflow: hidden;
-                box-shadow: 0 14px 32px rgba(58, 89, 128, 0.14);
+                box-shadow: 0 14px 32px rgba(20, 72, 57, 0.12);
             }}
 
             .video-title {{
-                color: #253653;
+                color: #17332e;
                 font-size: 16px;
                 font-weight: 700;
                 margin-bottom: 12px;
@@ -338,7 +388,7 @@ def display_video_pair(
                 justify-content: center;
                 overflow: hidden;
                 border-radius: 14px;
-                background: linear-gradient(135deg, #d9fbf3, #fff0c2 55%, #ffe1ec);
+                background: linear-gradient(135deg, #e8f4ef, #f3f8f6 55%, #e4f1eb);
             }}
 
             video {{
@@ -516,11 +566,22 @@ st.caption(
     "to watch them."
 )
 
-show_showcase = st.toggle(
-    "Load video showcase",
-    value=False,
-    key="load_video_showcase"
-)
+if "show_video_showcase" not in st.session_state:
+    st.session_state.show_video_showcase = False
+
+if st.button(
+    "▶️ Load video showcase"
+    if not st.session_state.show_video_showcase
+    else "✕ Hide video showcase",
+    key="load_video_showcase_button",
+    type="primary",
+    use_container_width=True
+):
+    st.session_state.show_video_showcase = (
+        not st.session_state.show_video_showcase
+    )
+
+show_showcase = st.session_state.show_video_showcase
 
 if show_showcase:
 
@@ -1047,15 +1108,15 @@ st.divider()
 st.html("""
 <div style="
     text-align: center;
-    color: #34445f;
+    color: #e4f5ee;
     padding: 26px 20px;
-    background: linear-gradient(120deg, #fff1bd, #ffe2ed, #e1f8ff);
-    border: 1px solid #ffffff;
+    background: linear-gradient(120deg, #075e46, #087f5b, #13a079);
+    border: 1px solid #d6e5df;
     border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(58, 89, 128, 0.1);
+    box-shadow: 0 12px 30px rgba(20, 72, 57, 0.12);
 ">
 
-    <h4 style="color: #253653; margin-bottom: 8px;">
+    <h4 style="color: #ffffff; margin-bottom: 8px;">
         ⚽ Football Vision AI
     </h4>
 
@@ -1063,7 +1124,7 @@ st.html("""
 
     <p style="
         margin: 0;
-        color: #e85d82;
+        color: #d7ffe9;
         font-weight: 800;
         font-size: 17px;
     ">
